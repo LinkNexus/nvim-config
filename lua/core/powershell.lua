@@ -70,7 +70,7 @@ end
 
 local function build_cmd(config, opts)
   local file =
-    string.format("%s/PowerShellEditorServices/Start-EditorServices.ps1", config.bundle_path)
+      string.format("%s/PowerShellEditorServices/Start-EditorServices.ps1", config.bundle_path)
 
   local cmd = {
     config.shell,
@@ -176,12 +176,12 @@ local function start_session(session)
     debug = false,
   })
 
-  session.term_buf = api.nvim_create_buf(false, false)
-  api.nvim_buf_call(session.term_buf, function()
+  session.term_buf = vim.api.nvim_create_buf(false, false)
+  vim.api.nvim_buf_call(session.term_buf, function()
     session.term_channel = vim.fn.jobstart(cmd, { term = true })
   end)
 
-  api.nvim_exec_autocmds("User", {
+  vim.api.nvim_exec_autocmds("User", {
     pattern = "powershell.nvim-term",
     data = {
       channel = session.term_channel,
@@ -199,7 +199,7 @@ local function start_session(session)
     session.details = details
 
     for _, buf in ipairs(session.pending_buffers) do
-      if api.nvim_buf_is_valid(buf) then
+      if vim.api.nvim_buf_is_valid(buf) then
         attach_lsp(buf, session)
       end
     end
@@ -240,7 +240,7 @@ function M.initialize_or_attach(buf)
     return
   end
 
-  local bufname = api.nvim_buf_get_name(buf)
+  local bufname = vim.api.nvim_buf_get_name(buf)
   if bufname == "" then
     return
   end
@@ -266,7 +266,7 @@ function M.toggle_term()
     return
   end
 
-  local buf = api.nvim_get_current_buf()
+  local buf = vim.api.nvim_get_current_buf()
   local root_dir = config.root_dir(buf)
   local session = ensure_session(root_dir)
 
@@ -277,12 +277,12 @@ function M.toggle_term()
 
   local win = find_win_for_buf(session.term_buf)
   if win then
-    api.nvim_win_close(win, true)
+    vim.api.nvim_win_close(win, true)
     return
   end
 
   vim.cmd("split")
-  api.nvim_set_current_buf(session.term_buf)
+  vim.api.nvim_set_current_buf(session.term_buf)
 end
 
 function M.eval()
@@ -291,7 +291,7 @@ function M.eval()
     return
   end
 
-  local buf = api.nvim_get_current_buf()
+  local buf = vim.api.nvim_get_current_buf()
   local root_dir = config.root_dir(buf)
   local session = ensure_session(root_dir)
 
@@ -300,18 +300,18 @@ function M.eval()
     return
   end
 
-  local mode = api.nvim_get_mode().mode
+  local mode = vim.api.nvim_get_mode().mode
   local lines = nil
 
   if mode == "n" then
-    lines = { api.nvim_get_current_line() }
+    lines = { vim.api.nvim_get_current_line() }
   elseif mode == "v" or mode == "V" or mode == "\22" then
     vim.cmd.normal({ args = { "\27" }, bang = true })
     local start_row = vim.fn.line("'<") - 1
     local start_col = vim.fn.col("'<") - 1
     local end_row = vim.fn.line("'>") - 1
     local end_col = vim.fn.col("'>")
-    lines = api.nvim_buf_get_text(0, start_row, start_col, end_row, end_col, {})
+    lines = vim.api.nvim_buf_get_text(0, start_row, start_col, end_row, end_col, {})
   end
 
   if not lines or #lines == 0 then
@@ -319,7 +319,7 @@ function M.eval()
   end
 
   for _, line in ipairs(lines) do
-    api.nvim_chan_send(session.term_channel, line .. "\r")
+    vim.api.nvim_chan_send(session.term_channel, line .. "\r")
   end
 end
 
@@ -344,11 +344,11 @@ function M.setup_dap()
     })
 
     state.debug_term.buf = api.nvim_create_buf(false, false)
-    api.nvim_buf_call(state.debug_term.buf, function()
+    vim.api.nvim_buf_call(state.debug_term.buf, function()
       state.debug_term.channel = vim.fn.jobstart(cmd, { term = true })
     end)
 
-    api.nvim_exec_autocmds("User", {
+    vim.api.nvim_exec_autocmds("User", {
       pattern = "powershell.nvim-debug_term",
       data = {
         channel = state.debug_term.channel,
@@ -403,7 +403,7 @@ function M.setup_dap()
     session.on_close["powershell-term"] = function()
       local term_buf = state.debug_term.buf
       if term_buf and api.nvim_buf_is_valid(term_buf) then
-        pcall(api.nvim_buf_delete, term_buf, { force = true })
+        pcall(vim.api.nvim_buf_delete, term_buf, { force = true })
       end
       state.debug_term.buf = nil
       state.debug_term.channel = nil
@@ -412,26 +412,26 @@ function M.setup_dap()
 
   dap.listeners.after["event_powerShell/sendKeyPress"]["powershell-term"] = function()
     if state.debug_term.channel then
-      api.nvim_chan_send(state.debug_term.channel, "p")
+      vim.api.nvim_chan_send(state.debug_term.channel, "p")
     end
   end
 end
 
 function M.toggle_debug_term()
   local term_buf = state.debug_term.buf
-  if not term_buf or not api.nvim_buf_is_valid(term_buf) then
+  if not term_buf or not vim.api.nvim_buf_is_valid(term_buf) then
     vim.notify("PowerShell debug terminal is not ready.", vim.log.levels.WARN)
     return
   end
 
   local win = find_win_for_buf(term_buf)
   if win then
-    api.nvim_win_close(win, true)
+    vim.api.nvim_win_close(win, true)
     return
   end
 
   vim.cmd("split")
-  api.nvim_set_current_buf(term_buf)
+  vim.api.nvim_set_current_buf(term_buf)
 end
 
 return M

@@ -45,8 +45,11 @@ vim.opt.scrolloff = 10
 
 vim.opt.completeopt = "menuone,noselect,fuzzy,nosort"
 
--- vim.g.loaded_netrw = 1
--- vim.g.loaded_netrwPlugin = 1
+vim.opt.exrc = true
+vim.opt.secure = true
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
 vim.schedule(function()
   vim.opt.clipboard = "unnamedplus"
