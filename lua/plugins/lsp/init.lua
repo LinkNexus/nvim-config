@@ -48,9 +48,6 @@ return {
         codelens = {
           enabled = false,
         },
-        folds = {
-          enabled = true,
-        },
       }
       require("plugins.lsp.attach").setup(attach)
     end,

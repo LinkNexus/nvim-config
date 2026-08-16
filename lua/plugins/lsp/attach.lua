@@ -2,15 +2,6 @@ local M = {}
 
 local snacks_ok, Snacks = pcall(require, "snacks")
 
-local function has_method(bufnr, method)
-  for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
-    if client:supports_method(method) then
-      return true
-    end
-  end
-  return false
-end
-
 -- helper that returns true when the buffer has any LSP client attached
 local function has_lsp(bufnr)
   return not vim.tbl_isempty(vim.lsp.get_clients({ bufnr = bufnr }))
@@ -481,7 +472,13 @@ function M.setup(settings)
         end
       end
 
-      -- Enable inlay hints, codelens and folds based on settings
+      -- Enable inlay hints and codelens based on settings. Folding is
+      -- handled globally by nvim-ufo (plugins/folding.lua) instead of
+      -- per-buffer here -- ufo needs to own foldmethod/foldexpr itself
+      -- to render its fold preview/virtual text, and its own 'lsp'
+      -- provider already falls back to treesitter/indent per buffer
+      -- when a client doesn't support textDocument/foldingRange, so
+      -- there's nothing left for this attach callback to do.
       if settings.inlay_hints.enabled and vim.lsp.inlay_hint and vim.lsp.inlay_hint.enable then
         local ft = vim.bo[bufnr].filetype
         if not vim.tbl_contains(settings.inlay_hints.exclude, ft) then
@@ -495,13 +492,6 @@ function M.setup(settings)
           buffer = bufnr,
           callback = function() vim.lsp.codelens.enable(true) end,
         })
-      end
-
-      if settings.folds.enabled and has_method(bufnr, "textDocument/foldingRange") then
-        if vim.o.foldmethod == "manual" then
-          vim.opt_local.foldmethod = "expr"
-          vim.opt_local.foldexpr = "v:lua.vim.lsp.foldexpr()"
-        end
       end
     end,
   })
