@@ -30,6 +30,13 @@ return {
     opts = {
       lazygit = { enabled = true },
       image = { enabled = true },
+      terminal = {
+        win = {
+          style = "terminal",
+          position = "bottom",
+          height = 0.3,
+        },
+      },
       dashboard = {
         preset = {
           header = table.concat(banner_lines, "\n")

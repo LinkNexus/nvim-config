@@ -18,6 +18,10 @@ return {
         objc = { "clang_format" },
         objcpp = { "clang_format" },
         cs = { "csharpier" },
+        zsh = { "shfmt" },
+        sh = { "shfmt" },
+        bash = { "shfmt" },
+        toml = { "taplo" },
       },
       format_on_save = {
         timeout_ms = 500,
