@@ -23,6 +23,20 @@ return {
         desc = "Toggle Breakpoint",
       },
       {
+        "<leader>dp",
+        function()
+          require("plugins.debugging.utils").pick_breakpoints()
+        end,
+        desc = "Pick Breakpoint",
+      },
+      {
+        "<leader>dq",
+        function()
+          require("plugins.debugging.utils").list_breakpoints()
+        end,
+        desc = "Breakpoints to Quickfix",
+      },
+      {
         "<leader>dc",
         function()
           require("dap").continue()
@@ -163,6 +177,11 @@ return {
       end
 
       local dap = require("dap")
+      local debugging_utils = require("plugins.debugging.utils")
+
+      vim.api.nvim_create_user_command("DapBreakpoints", function()
+        debugging_utils.list_breakpoints()
+      end, { desc = "List all DAP breakpoints in the quickfix list" })
 
       local ok_powershell, powershell = pcall(require, "core.powershell")
       if ok_powershell then
