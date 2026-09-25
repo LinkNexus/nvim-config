@@ -1,3 +1,0 @@
-[submodule "custom_plugins/cpp_header_sync.nvim"]
-	path = custom_plugins/cpp_header_sync.nvim
-	url = git@github.com:LinkNexus/cpp_header_sync.nvim
