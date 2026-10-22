@@ -114,7 +114,7 @@ return {
     ---@type YaziConfig | {}
     opts = {
       -- if you want to open yazi instead of netrw, see below for more info
-      open_for_directories = false,
+      open_for_directories = true,
       keymaps = {
         show_help = "<f1>",
       },
@@ -157,36 +157,6 @@ return {
     keys = {
       -- suggested keymap
       { "<leader>p", "<cmd>PasteImage<cr>", desc = "Paste image from system clipboard" },
-    },
-  },
-  {
-    "3rd/diagram.nvim",
-    dependencies = {
-      { "3rd/image.nvim", opts = {} },
-    },
-    opts = {
-      -- Disable automatic rendering for manual-only workflow
-      events = {
-        render_buffer = {}, -- Empty = no automatic rendering
-        clear_buffer = { "BufLeave" },
-      },
-      renderer_options = {
-        mermaid = {
-          theme = "dark",
-          scale = 2,
-        },
-      },
-    },
-    keys = {
-      {
-        "K",
-        function()
-          require("diagram").show_diagram_hover()
-        end,
-        mode = "n",
-        ft = { "markdown", "norg" },
-        desc = "Show diagram in new tab",
-      },
     },
   },
 }

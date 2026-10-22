@@ -6,12 +6,6 @@ return {
     },
     version = "*",
     config = function()
-      -- require("mini.completion").setup({
-      --   lsp_completion = {
-      --     auto_setup = true,
-      --   }
-      -- })
-
       require("mini.cmdline").setup()
 
       require("mini.pairs").setup({
@@ -21,14 +15,6 @@ return {
         skip_unbalanced = true,
         markdown = true,
       })
-
-      -- local MiniSnippets = require("mini.snippets")
-      -- MiniSnippets.setup({
-      --   -- snippets = {
-      --   --   MiniSnippets.gen_loader.from_lang(), -- loads friendly-snippets
-      --   -- },
-      -- })
-      -- MiniSnippets.start_lsp_server({ match = false })
 
       local MiniAi = require("mini.ai")
 
