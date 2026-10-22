@@ -18,6 +18,37 @@ return {
     },
   },
   {
+    -- Re-evaluates a directory's .envrc from inside a running Neovim.
+    --
+    -- Launching nvim from within a project already inherits the devShell
+    -- direnv loaded in the shell -- child processes inherit the parent's
+    -- environment, so LSPs and :! commands get the project's toolchain
+    -- for free. This only covers the cases that inheritance cannot,
+    -- because the environment is otherwise frozen at startup:
+    --   - one session spanning two projects, where an LSP started for a
+    --     file in the second runs with the first one's PATH
+    --   - nvim started outside any project, which gets only the global
+    --     baseline toolchain
+    --   - a project's flake edited while nvim is still open
+    --
+    -- An .envrc still has to be `direnv allow`ed; this does not bypass
+    -- that, it just reacts to one that is already trusted.
+    --
+    -- The export is asynchronous: after a :cd the new PATH lands a moment
+    -- later, not on the same tick. Worth knowing when something reads the
+    -- environment immediately after changing directory.
+    --
+    -- Left noisy on purpose. g:direnv_silent_load = 1 would suppress the
+    -- (very long) "direnv: export +AR +AS ..." line it prints on every
+    -- DirChanged, but it gates the plugin's whole stderr relay, so it
+    -- would also swallow ".envrc is blocked. Run `direnv allow`" and any
+    -- nix evaluation error -- i.e. exactly the messages that explain why
+    -- the toolchain is not what you expected. With one nvim per project
+    -- DirChanged rarely fires anyway, so the noise costs little and the
+    -- visibility is worth keeping.
+    "direnv/direnv.vim",
+  },
+  {
     "nvim-lua/plenary.nvim",
   },
   {
@@ -92,22 +123,6 @@ return {
     config = function(_, opts)
       require("codecompanion").setup(opts)
     end,
-  },
-  {
-    "folke/sidekick.nvim",
-    keys = {
-      {
-        "<tab>",
-        function()
-          -- if there is a next edit, jump to it, otherwise apply it if any
-          if not require("sidekick").nes_jump_or_apply() then
-            return "<Tab>" -- fallback to normal tab
-          end
-        end,
-        expr = true,
-        desc = "Goto/Apply Next Edit Suggestion",
-      },
-    }
   },
   {
     "NeogitOrg/neogit",
