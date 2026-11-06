@@ -2,6 +2,9 @@ local M = {}
 local dap = require("dap")
 local debugging_utils = require("plugins.debugging.utils")
 
+-- codelldb finds debugserver through LLDB_DEBUGSERVER_PATH, exported in
+-- zsh/.zshenv -- nix dev shells' DEVELOPER_DIR would otherwise send it
+-- looking in nix's apple-sdk, which has none.
 function M.setup()
   dap.adapters.codelldb = {
     type = "server",
