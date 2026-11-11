@@ -44,7 +44,7 @@ function M.setup(capabilities)
         "--completion-style=detailed",
         "--function-arg-placeholders",
         "--fallback-style=llvm",
-        "--query-driver=**/avr-gcc,**/avr-g++"
+        "--query-driver=/nix/store/**,**/avr-gcc,**/avr-g++"
       },
       root_markers = {
         "compile_commands.json",
