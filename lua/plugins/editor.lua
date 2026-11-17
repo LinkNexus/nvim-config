@@ -93,16 +93,32 @@ return {
     },
     keys = {
       -- 👇 in this section, choose your own keymappings!
+      -- Inside Rex these open a real yazi in a floating pane instead
+      -- (utils/rex_yazi.lua)
       {
         "<leader>ef",
         mode = { "n", "v" },
-        "<cmd>Yazi<cr>",
+        function()
+          local rex_yazi = require("utils.rex_yazi")
+          if rex_yazi.available() then
+            rex_yazi.open_current_file()
+          else
+            vim.cmd("Yazi")
+          end
+        end,
         desc = "Open yazi at the current file",
       },
       {
         -- Open in the current working directory
         "<leader>ew",
-        "<cmd>Yazi cwd<cr>",
+        function()
+          local rex_yazi = require("utils.rex_yazi")
+          if rex_yazi.available() then
+            rex_yazi.open(vim.fn.getcwd())
+          else
+            vim.cmd("Yazi cwd")
+          end
+        end,
         desc = "Open the file manager in nvim's working directory",
       },
       {
